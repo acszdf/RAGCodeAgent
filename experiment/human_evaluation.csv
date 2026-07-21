@@ -1,0 +1,11 @@
+sample,mode,rubric_version,evaluator_id,evaluation_date,detected_true_issues,total_ground_truth_issues,false_positives,duplicate_findings,recommendation_quality_1_5,overall_review_quality_1_5,severity_correct,severity_assessed,location_exact,location_assessed,unsupported_claims,total_review_claims,valid_citations,total_citations,supported_citations,citation_support_assessed,notes
+case_01_naming.diff,baseline,2.0,reviewer-1,2026-07-21,0,1,0,0,,1,0,0,0,0,0,0,0,0,0,0,未输出审查意见；因此未评建议质量，命名根因未检出
+case_02_none_access.diff,baseline,2.0,reviewer-1,2026-07-21,1,1,0,0,4,4,1,1,0,1,0,1,0,0,0,0,正确识别空值访问并给出可执行建议；定位范围为11-12行，未精确到属性访问行12
+case_03_sql_injection.diff,baseline,2.0,reviewer-1,2026-07-21,1,1,0,0,5,5,1,1,1,1,0,1,0,0,0,0,准确识别SQL注入，严重度与定位正确，参数化查询建议与当前代码上下文匹配
+case_04_layer_violation.diff,baseline,2.0,reviewer-1,2026-07-21,1,2,1,0,5,2,1,1,0,1,1,2,0,0,0,0,命中空值风险但漏掉分层约束；额外推断缺少鉴权，该断言依赖diff外部未知上下文；正确问题定位范围9-10行，未精确到第10行
+case_05_swallowed_exception.diff,baseline,2.0,reviewer-1,2026-07-21,1,1,0,1,5,4,1,1,0,1,0,2,0,0,0,0,完整识别异常吞没及错误成功状态，但将同一根因拆成两条意见；主问题定位16-17行，未精确到第17行
+case_01_naming.diff,rag,2.0,reviewer-1,2026-07-21,1,1,0,0,4,4,1,1,1,1,0,1,1,1,1,1,命中函数命名根因并引用PEP 8；建议只覆盖函数名，未继续指出参数和局部变量命名
+case_02_none_access.diff,rag,2.0,reviewer-1,2026-07-21,1,1,0,0,4,3,0,1,0,1,0,1,1,1,1,1,问题与建议基本正确，但将普通运行时空值错误标为critical而非high；定位范围11-12行，未精确到属性访问行12
+case_03_sql_injection.diff,rag,2.0,reviewer-1,2026-07-21,1,1,0,0,4,4,1,1,1,1,0,1,1,1,1,1,准确识别SQL注入并引用OWASP；参数占位符建议为通用写法，未明确匹配当前SQLAlchemy调用方式
+case_04_layer_violation.diff,rag,2.0,reviewer-1,2026-07-21,2,2,0,0,5,4,1,2,0,2,0,2,2,2,2,2,两个根因均检出且引用支持充分；架构问题标为high而标注基准为medium，两个定位均未与基准根因行完全一致
+case_05_swallowed_exception.diff,rag,2.0,reviewer-1,2026-07-21,1,1,0,1,5,4,1,1,0,1,0,2,1,1,1,1,引用项目异常处理规则并提出可执行修复，但将同一根因拆成两条意见；主问题定位16-17行，未精确到第17行

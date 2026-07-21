@@ -1,0 +1,15 @@
+diff --git a/app/routes/users.py b/app/routes/users.py
+index 12b96a4..480809a 100644
+--- a/app/routes/users.py
++++ b/app/routes/users.py
+@@ -1,1 +1,2 @@
+ from flask import Blueprint, jsonify
++from app.repositories import user_repository
+@@ -3,1 +4,7 @@
+ bp = Blueprint("users", __name__)
++
++
++@bp.get("/users/<int:user_id>")
++def get_user(user_id):
++    user = user_repository.find_by_id(user_id)
++    return jsonify(user.to_dict())

@@ -1,0 +1,98 @@
+{
+  "baseline": {
+    "samples": 5,
+    "issue_recall": {
+      "detected": 4,
+      "ground_truth": 6,
+      "rate": 0.6667
+    },
+    "false_positives": 1,
+    "duplicate_findings": 1,
+    "recommendation_quality": {
+      "mean": 4.75,
+      "assessed_samples": 4
+    },
+    "overall_review_quality_mean": 3.2,
+    "unsupported_claim_rate": {
+      "unsupported": 1,
+      "total_claims": 6,
+      "rate": 0.1667
+    },
+    "severity_accuracy": {
+      "correct": 4,
+      "assessed": 4,
+      "rate": 1.0
+    },
+    "exact_location_rate": {
+      "exact": 1,
+      "assessed": 4,
+      "rate": 0.25
+    },
+    "citation_extractive_validity": {
+      "valid": 0,
+      "total": 0,
+      "rate": null
+    },
+    "citation_support_rate": {
+      "supported": 0,
+      "assessed": 0,
+      "rate": null
+    }
+  },
+  "rag": {
+    "samples": 5,
+    "issue_recall": {
+      "detected": 6,
+      "ground_truth": 6,
+      "rate": 1.0
+    },
+    "false_positives": 0,
+    "duplicate_findings": 1,
+    "recommendation_quality": {
+      "mean": 4.4,
+      "assessed_samples": 5
+    },
+    "overall_review_quality_mean": 3.8,
+    "unsupported_claim_rate": {
+      "unsupported": 0,
+      "total_claims": 7,
+      "rate": 0.0
+    },
+    "severity_accuracy": {
+      "correct": 4,
+      "assessed": 6,
+      "rate": 0.6667
+    },
+    "exact_location_rate": {
+      "exact": 2,
+      "assessed": 6,
+      "rate": 0.3333
+    },
+    "citation_extractive_validity": {
+      "valid": 6,
+      "total": 6,
+      "rate": 1.0
+    },
+    "citation_support_rate": {
+      "supported": 6,
+      "assessed": 6,
+      "rate": 1.0
+    }
+  },
+  "_meta": {
+    "schema_version": 2,
+    "rubric_version": "2.0",
+    "evaluation_rows": 10,
+    "evaluator_ids": [
+      "reviewer-1"
+    ],
+    "evaluation_dates": [
+      "2026-07-21"
+    ],
+    "score_file_sha256": "74fb13e0c04813775adf1c645d7339c95a05e418b0cf2f0c425227f6dd895214",
+    "ground_truth_cross_validated": true,
+    "ground_truth_sha256": "81f4dd6a110382d0a70cec95c8d6fbb9f71724e2ddc66adc5d2ca90556d84db0",
+    "result_json_cross_validated": true,
+    "result_json_manifest_sha256": "98d3bf0b023568f19dc3f6120ed4d3470bddda2b3e682d44a58afc10368263f5"
+  }
+}

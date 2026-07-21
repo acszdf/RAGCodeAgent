@@ -1,0 +1,122 @@
+{
+  "mode": "rag",
+  "model": "deepseek-chat",
+  "prompt_version": "2026-07-21.1",
+  "created_at": "2026-07-20T17:15:36.437884+00:00",
+  "sample": "case_05_swallowed_exception.diff",
+  "sample_sha256": "bb8e222678e1c01cbdbbd93b537a022829a5e3970aa2a7ac0547629c3ebeae33",
+  "retrieval_query": "Python function variable parameter naming style lowercase underscore\n\n--- query ---\n\nerror failure logging observability swallowed exceptions status",
+  "prompt": "Review mode: rag\n\nRules:\n1. Review only added lines shown with a '+' marker.\n2. Use the FILE path and numeric new-line labels exactly as supplied.\n3. Report one root cause per issue. Do not duplicate findings.\n4. Severity meanings: critical = immediate compromise/data loss; high = likely serious runtime\n   or security failure; medium = conditional defect or important design violation; low = style\n   or maintainability problem with limited runtime impact.\n5. Confidence below 0.70 should normally be omitted.\n6. Use only the knowledge chunks below as external evidence. When a finding relies on a standard or project rule, cite it with the exact source, section, chunk_id, and a short verbatim quote. Never invent or paraphrase a quote. A code-local correctness bug may have an empty citations array when no retrieved chunk supports it. Mandatory language such as 'must not' or 'prohibited' in project-design.md is a binding local constraint: report a direct violation as architecture or maintainability, not as a subjective preference. Never report a naming violation when the identifier already uses lowercase words separated by underscores.\n7. issue_id values must be sequential: ISSUE-001, ISSUE-002, ...\n8. If no defensible issues exist, return an empty issues array.\n\nRequired JSON schema:\n{\n  \"$defs\": {\n    \"Citation\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"source\": {\n          \"description\": \"Knowledge document path shown in context\",\n          \"title\": \"Source\",\n          \"type\": \"string\"\n        },\n        \"section\": {\n          \"description\": \"Section heading shown in context\",\n          \"title\": \"Section\",\n          \"type\": \"string\"\n        },\n        \"chunk_id\": {\n          \"description\": \"Exact chunk identifier shown in context\",\n          \"title\": \"Chunk Id\",\n          \"type\": \"string\"\n        },\n        \"quote\": {\n          \"description\": \"Short verbatim quote copied from the retrieved chunk\",\n          \"maxLength\": 400,\n          \"minLength\": 1,\n          \"title\": \"Quote\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"source\",\n        \"section\",\n        \"chunk_id\",\n        \"quote\"\n      ],\n      \"title\": \"Citation\",\n      \"type\": \"object\"\n    },\n    \"ReviewIssue\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"issue_id\": {\n          \"pattern\": \"^ISSUE-\\\\d{3}$\",\n          \"title\": \"Issue Id\",\n          \"type\": \"string\"\n        },\n        \"file\": {\n          \"title\": \"File\",\n          \"type\": \"string\"\n        },\n        \"line_start\": {\n          \"minimum\": 1,\n          \"title\": \"Line Start\",\n          \"type\": \"integer\"\n        },\n        \"line_end\": {\n          \"minimum\": 1,\n          \"title\": \"Line End\",\n          \"type\": \"integer\"\n        },\n        \"category\": {\n          \"enum\": [\n            \"correctness\",\n            \"security\",\n            \"reliability\",\n            \"maintainability\",\n            \"style\",\n            \"architecture\",\n            \"performance\",\n            \"testing\"\n          ],\n          \"title\": \"Category\",\n          \"type\": \"string\"\n        },\n        \"severity\": {\n          \"$ref\": \"#/$defs/Severity\"\n        },\n        \"confidence\": {\n          \"maximum\": 1,\n          \"minimum\": 0,\n          \"title\": \"Confidence\",\n          \"type\": \"number\"\n        },\n        \"problem\": {\n          \"minLength\": 1,\n          \"title\": \"Problem\",\n          \"type\": \"string\"\n        },\n        \"suggestion\": {\n          \"minLength\": 1,\n          \"title\": \"Suggestion\",\n          \"type\": \"string\"\n        },\n        \"explanation\": {\n          \"minLength\": 1,\n          \"title\": \"Explanation\",\n          \"type\": \"string\"\n        },\n        \"citations\": {\n          \"items\": {\n            \"$ref\": \"#/$defs/Citation\"\n          },\n          \"title\": \"Citations\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\": [\n        \"issue_id\",\n        \"file\",\n        \"line_start\",\n        \"line_end\",\n        \"category\",\n        \"severity\",\n        \"confidence\",\n        \"problem\",\n        \"suggestion\",\n        \"explanation\"\n      ],\n      \"title\": \"ReviewIssue\",\n      \"type\": \"object\"\n    },\n    \"Severity\": {\n      \"enum\": [\n        \"critical\",\n        \"high\",\n        \"medium\",\n        \"low\"\n      ],\n      \"title\": \"Severity\",\n      \"type\": \"string\"\n    }\n  },\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"summary\": {\n      \"title\": \"Summary\",\n      \"type\": \"string\"\n    },\n    \"issues\": {\n      \"items\": {\n        \"$ref\": \"#/$defs/ReviewIssue\"\n      },\n      \"title\": \"Issues\",\n      \"type\": \"array\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"issues\"\n  ],\n  \"title\": \"ReviewPayload\",\n  \"type\": \"object\"\n}\n\nExternal knowledge:\n[chunk_id=chunk-1163ea5523af0422]\nsource=pep-0008.rst\nsection=Descriptive: Naming Styles\ncontent:\nThere are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\n---\n\n[chunk_id=chunk-e93e106b2c78c45a]\nsource=project-design.md\nsection=Exception handling\ncontent:\nExceptions must not be silently discarded. A broad exception handler must either log the\nfailure with operation context and preserve the traceback, translate it to a documented\ndomain error, or re-raise it. An empty handler or an `except` block containing only `pass`\nis prohibited.\n\n---\n\n[chunk_id=chunk-5bfd25af6ead49ee]\nsource=pep-0008.rst\nsection=Function and Variable Names\ncontent:\nFunction names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility.\n\n---\n\n[chunk_id=chunk-c73cde5fc3773253]\nsource=pep-0008.rst\nsection=Exception Names\ncontent:\nBecause exceptions should be classes, the class naming convention\napplies here.  However, you should use the suffix \"Error\" on your\nexception names (if the exception actually is an error).\n\n---\n\n[chunk_id=chunk-f74ec20fe4ef3a22]\nsource=pep-0008.rst\nsection=Descriptive: Naming Styles\ncontent:\nase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\nThere's also the style of using a short unique prefix to group related\nnames together.  This is not used much in Python, but it is mentioned\nfor completeness.  For example, the ``os.stat()`` function returns a\ntuple whose items traditionally have names like ``st_mode``,\n``st_size``, ``st_mtime`` and so on.  (This is done to emphasize the\ncorrespondence with the fields of the POSIX system call struct, which\nhelps programmers familiar with that.)\n\nThe X11 library uses a leading X for all its public functions.  In\nPython, this style is generally deemed unnecessary because attribute\nand method names are prefixed with an object, and function names are\nprefixed with a module name.\n\nIn addition, the following special forms using leading or trailing\nunderscores are recognized (these can generally be combined with any\ncase convention):\n\n- ``_single_leading_underscore``: weak \"internal use\" indicator.\n  E.g. ``from M import *`` does not import objects whose names start\n  with an underscore.\n\nGit diff with explicit new-line labels:\nFILE: app/notification_service.py\n+11: \n+12: \n+13: def notify_user(user, message):\n+14:     try:\n+15:         mailer.send(user.email, message)\n+16:     except Exception:\n+17:         pass\n+18:     return {\"delivered\": True}\n",
+  "raw_response": "{\n  \"summary\": \"Found 2 issues: silent exception handling and incorrect return value on failure.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 16,\n      \"line_end\": 17,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Exception is silently discarded with an empty except block containing only 'pass'.\",\n      \"suggestion\": \"Log the exception with traceback and context, or re-raise it. For example: except Exception as e: log.error('Failed to send notification to %s: %s', user.email, e, exc_info=True); raise\",\n      \"explanation\": \"The project-design.md mandates that exceptions must not be silently discarded; an empty handler or 'pass' is prohibited.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"Exception handling\",\n          \"chunk_id\": \"chunk-e93e106b2c78c45a\",\n          \"quote\": \"Exceptions must not be silently discarded. A broad exception handler must either log the failure with operation context and preserve the traceback, translate it to a documented domain error, or re-raise it. An empty handler or an `except` block containing only `pass` is prohibited.\"\n        }\n      ]\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 18,\n      \"line_end\": 18,\n      \"category\": \"correctness\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"Function always returns {\\\"delivered\\\": True} even when mailer.send raises an exception, misleading callers.\",\n      \"suggestion\": \"Return a failure indicator when an exception occurs, e.g., return {\\\"delivered\\\": False} or re-raise the exception.\",\n      \"explanation\": \"The function catches all exceptions and then unconditionally returns a success status. This violates the principle of honest interfaces and can cause silent data loss or incorrect business logic.\",\n      \"citations\": []\n    }\n  ]\n}",
+  "raw_attempts": [
+    "{\n  \"summary\": \"Found 2 issues: silent exception handling and incorrect return value on failure.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 16,\n      \"line_end\": 17,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Exception is silently discarded with an empty except block containing only 'pass'.\",\n      \"suggestion\": \"Log the exception with traceback and context, or re-raise it. For example: except Exception as e: log.error('Failed to send notification to %s: %s', user.email, e, exc_info=True); raise\",\n      \"explanation\": \"The project-design.md mandates that exceptions must not be silently discarded; an empty handler or 'pass' is prohibited.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"Exception handling\",\n          \"chunk_id\": \"chunk-e93e106b2c78c45a\",\n          \"quote\": \"Exceptions must not be silently discarded. A broad exception handler must either log the failure with operation context and preserve the traceback, translate it to a documented domain error, or re-raise it. An empty handler or an `except` block containing only `pass` is prohibited.\"\n        }\n      ]\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 18,\n      \"line_end\": 18,\n      \"category\": \"correctness\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"Function always returns {\\\"delivered\\\": True} even when mailer.send raises an exception, misleading callers.\",\n      \"suggestion\": \"Return a failure indicator when an exception occurs, e.g., return {\\\"delivered\\\": False} or re-raise the exception.\",\n      \"explanation\": \"The function catches all exceptions and then unconditionally returns a success status. This violates the principle of honest interfaces and can cause silent data loss or incorrect business logic.\",\n      \"citations\": []\n    }\n  ]\n}",
+    "{\n  \"summary\": \"Found 2 issues: silent exception handling and incorrect return value on failure.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 16,\n      \"line_end\": 17,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Exception is silently discarded with an empty except block containing only 'pass'.\",\n      \"suggestion\": \"Log the exception with traceback and context, or re-raise it. For example: except Exception as e: log.error('Failed to send notification to %s: %s', user.email, e, exc_info=True); raise\",\n      \"explanation\": \"The project-design.md mandates that exceptions must not be silently discarded; an empty handler or 'pass' is prohibited.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"Exception handling\",\n          \"chunk_id\": \"chunk-e93e106b2c78c45a\",\n          \"quote\": \"Exceptions must not be silently discarded. A broad exception handler must either log the failure with operation context and preserve the traceback, translate it to a documented domain error, or re-raise it. An empty handler or an `except` block containing only `pass` is prohibited.\"\n        }\n      ]\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 18,\n      \"line_end\": 18,\n      \"category\": \"correctness\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"Function always returns {\\\"delivered\\\": True} even when mailer.send raises an exception, misleading callers.\",\n      \"suggestion\": \"Return a failure indicator when an exception occurs, e.g., return {\\\"delivered\\\": False} or re-raise the exception.\",\n      \"explanation\": \"The function catches all exceptions and then unconditionally returns a success status. This violates the principle of honest interfaces and can cause silent data loss or incorrect business logic.\",\n      \"citations\": []\n    }\n  ]\n}"
+  ],
+  "review": {
+    "summary": "Found 2 issues: silent exception handling and incorrect return value on failure.",
+    "issues": [
+      {
+        "issue_id": "ISSUE-001",
+        "file": "app/notification_service.py",
+        "line_start": 16,
+        "line_end": 17,
+        "category": "reliability",
+        "severity": "high",
+        "confidence": 1.0,
+        "problem": "Exception is silently discarded with an empty except block containing only 'pass'.",
+        "suggestion": "Log the exception with traceback and context, or re-raise it. For example: except Exception as e: log.error('Failed to send notification to %s: %s', user.email, e, exc_info=True); raise",
+        "explanation": "The project-design.md mandates that exceptions must not be silently discarded; an empty handler or 'pass' is prohibited.",
+        "citations": [
+          {
+            "source": "project-design.md",
+            "section": "Exception handling",
+            "chunk_id": "chunk-e93e106b2c78c45a",
+            "quote": "Exceptions must not be silently discarded. A broad exception handler must either log the failure with operation context and preserve the traceback, translate it to a documented domain error, or re-raise it. An empty handler or an `except` block containing only `pass` is prohibited."
+          }
+        ]
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "file": "app/notification_service.py",
+        "line_start": 18,
+        "line_end": 18,
+        "category": "correctness",
+        "severity": "high",
+        "confidence": 0.95,
+        "problem": "Function always returns {\"delivered\": True} even when mailer.send raises an exception, misleading callers.",
+        "suggestion": "Return a failure indicator when an exception occurs, e.g., return {\"delivered\": False} or re-raise the exception.",
+        "explanation": "The function catches all exceptions and then unconditionally returns a success status. This violates the principle of honest interfaces and can cause silent data loss or incorrect business logic.",
+        "citations": []
+      }
+    ]
+  },
+  "retrieved_chunks": [
+    {
+      "chunk_id": "chunk-1163ea5523af0422",
+      "source": "pep-0008.rst",
+      "section": "Descriptive: Naming Styles",
+      "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)",
+      "distance": 0.8653513193130493
+    },
+    {
+      "chunk_id": "chunk-e93e106b2c78c45a",
+      "source": "project-design.md",
+      "section": "Exception handling",
+      "text": "Exceptions must not be silently discarded. A broad exception handler must either log the\nfailure with operation context and preserve the traceback, translate it to a documented\ndomain error, or re-raise it. An empty handler or an `except` block containing only `pass`\nis prohibited.",
+      "distance": 0.8786633610725403
+    },
+    {
+      "chunk_id": "chunk-5bfd25af6ead49ee",
+      "source": "pep-0008.rst",
+      "section": "Function and Variable Names",
+      "text": "Function names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility.",
+      "distance": 0.8668648600578308
+    },
+    {
+      "chunk_id": "chunk-c73cde5fc3773253",
+      "source": "pep-0008.rst",
+      "section": "Exception Names",
+      "text": "Because exceptions should be classes, the class naming convention\napplies here.  However, you should use the suffix \"Error\" on your\nexception names (if the exception actually is an error).",
+      "distance": 0.8958796262741089
+    },
+    {
+      "chunk_id": "chunk-f74ec20fe4ef3a22",
+      "source": "pep-0008.rst",
+      "section": "Descriptive: Naming Styles",
+      "text": "ase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\nThere's also the style of using a short unique prefix to group related\nnames together.  This is not used much in Python, but it is mentioned\nfor completeness.  For example, the ``os.stat()`` function returns a\ntuple whose items traditionally have names like ``st_mode``,\n``st_size``, ``st_mtime`` and so on.  (This is done to emphasize the\ncorrespondence with the fields of the POSIX system call struct, which\nhelps programmers familiar with that.)\n\nThe X11 library uses a leading X for all its public functions.  In\nPython, this style is generally deemed unnecessary because attribute\nand method names are prefixed with an object, and function names are\nprefixed with a module name.\n\nIn addition, the following special forms using leading or trailing\nunderscores are recognized (these can generally be combined with any\ncase convention):\n\n- ``_single_leading_underscore``: weak \"internal use\" indicator.\n  E.g. ``from M import *`` does not import objects whose names start\n  with an underscore.",
+      "distance": 0.8976647853851318
+    }
+  ],
+  "citation_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "chunk_id": "chunk-e93e106b2c78c45a",
+      "valid": true,
+      "reason": "source, section, chunk_id, and quote match"
+    }
+  ],
+  "location_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    }
+  ],
+  "quality_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    }
+  ]
+}

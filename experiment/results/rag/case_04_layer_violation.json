@@ -1,0 +1,135 @@
+{
+  "mode": "rag",
+  "model": "deepseek-chat",
+  "prompt_version": "2026-07-21.1",
+  "created_at": "2026-07-20T17:22:32.493801+00:00",
+  "sample": "case_04_layer_violation.diff",
+  "sample_sha256": "e7fcebfa4f46270c5b5579279b48995f215cc07e6976563a14d04b652ce9725f",
+  "retrieval_query": "Python function variable parameter naming style lowercase underscore\n\n--- query ---\n\ndatabase lookup missing result None check before attribute access\n\n--- query ---\n\nweb route architecture service repository layer dependency boundary",
+  "prompt": "Review mode: rag\n\nRules:\n1. Review only added lines shown with a '+' marker.\n2. Use the FILE path and numeric new-line labels exactly as supplied.\n3. Report one root cause per issue. Do not duplicate findings.\n4. Severity meanings: critical = immediate compromise/data loss; high = likely serious runtime\n   or security failure; medium = conditional defect or important design violation; low = style\n   or maintainability problem with limited runtime impact.\n5. Confidence below 0.70 should normally be omitted.\n6. Use only the knowledge chunks below as external evidence. When a finding relies on a standard or project rule, cite it with the exact source, section, chunk_id, and a short verbatim quote. Never invent or paraphrase a quote. A code-local correctness bug may have an empty citations array when no retrieved chunk supports it. Mandatory language such as 'must not' or 'prohibited' in project-design.md is a binding local constraint: report a direct violation as architecture or maintainability, not as a subjective preference. Never report a naming violation when the identifier already uses lowercase words separated by underscores.\n7. issue_id values must be sequential: ISSUE-001, ISSUE-002, ...\n8. If no defensible issues exist, return an empty issues array.\n\nRequired JSON schema:\n{\n  \"$defs\": {\n    \"Citation\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"source\": {\n          \"description\": \"Knowledge document path shown in context\",\n          \"title\": \"Source\",\n          \"type\": \"string\"\n        },\n        \"section\": {\n          \"description\": \"Section heading shown in context\",\n          \"title\": \"Section\",\n          \"type\": \"string\"\n        },\n        \"chunk_id\": {\n          \"description\": \"Exact chunk identifier shown in context\",\n          \"title\": \"Chunk Id\",\n          \"type\": \"string\"\n        },\n        \"quote\": {\n          \"description\": \"Short verbatim quote copied from the retrieved chunk\",\n          \"maxLength\": 400,\n          \"minLength\": 1,\n          \"title\": \"Quote\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"source\",\n        \"section\",\n        \"chunk_id\",\n        \"quote\"\n      ],\n      \"title\": \"Citation\",\n      \"type\": \"object\"\n    },\n    \"ReviewIssue\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"issue_id\": {\n          \"pattern\": \"^ISSUE-\\\\d{3}$\",\n          \"title\": \"Issue Id\",\n          \"type\": \"string\"\n        },\n        \"file\": {\n          \"title\": \"File\",\n          \"type\": \"string\"\n        },\n        \"line_start\": {\n          \"minimum\": 1,\n          \"title\": \"Line Start\",\n          \"type\": \"integer\"\n        },\n        \"line_end\": {\n          \"minimum\": 1,\n          \"title\": \"Line End\",\n          \"type\": \"integer\"\n        },\n        \"category\": {\n          \"enum\": [\n            \"correctness\",\n            \"security\",\n            \"reliability\",\n            \"maintainability\",\n            \"style\",\n            \"architecture\",\n            \"performance\",\n            \"testing\"\n          ],\n          \"title\": \"Category\",\n          \"type\": \"string\"\n        },\n        \"severity\": {\n          \"$ref\": \"#/$defs/Severity\"\n        },\n        \"confidence\": {\n          \"maximum\": 1,\n          \"minimum\": 0,\n          \"title\": \"Confidence\",\n          \"type\": \"number\"\n        },\n        \"problem\": {\n          \"minLength\": 1,\n          \"title\": \"Problem\",\n          \"type\": \"string\"\n        },\n        \"suggestion\": {\n          \"minLength\": 1,\n          \"title\": \"Suggestion\",\n          \"type\": \"string\"\n        },\n        \"explanation\": {\n          \"minLength\": 1,\n          \"title\": \"Explanation\",\n          \"type\": \"string\"\n        },\n        \"citations\": {\n          \"items\": {\n            \"$ref\": \"#/$defs/Citation\"\n          },\n          \"title\": \"Citations\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\": [\n        \"issue_id\",\n        \"file\",\n        \"line_start\",\n        \"line_end\",\n        \"category\",\n        \"severity\",\n        \"confidence\",\n        \"problem\",\n        \"suggestion\",\n        \"explanation\"\n      ],\n      \"title\": \"ReviewIssue\",\n      \"type\": \"object\"\n    },\n    \"Severity\": {\n      \"enum\": [\n        \"critical\",\n        \"high\",\n        \"medium\",\n        \"low\"\n      ],\n      \"title\": \"Severity\",\n      \"type\": \"string\"\n    }\n  },\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"summary\": {\n      \"title\": \"Summary\",\n      \"type\": \"string\"\n    },\n    \"issues\": {\n      \"items\": {\n        \"$ref\": \"#/$defs/ReviewIssue\"\n      },\n      \"title\": \"Issues\",\n      \"type\": \"array\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"issues\"\n  ],\n  \"title\": \"ReviewPayload\",\n  \"type\": \"object\"\n}\n\nExternal knowledge:\n[chunk_id=chunk-dab91a531d33218b]\nsource=project-design.md\nsection=HTTP layer boundary\ncontent:\nRoute handlers may parse HTTP input, invoke one application service, and format the HTTP\nresponse. Route modules must not import or call repositories directly. Database access is\nowned by the repository layer and business decisions are owned by the service layer.\n\n---\n\n[chunk_id=chunk-4bcafd0218fe342d]\nsource=project-design.md\nsection=Missing entity handling\ncontent:\nRepository lookups may return `None` when an entity does not exist. A caller must handle\nthat result explicitly before accessing entity attributes. HTTP-facing code should convert\nthe missing-entity result to the service's documented 404 response.\n\n---\n\n[chunk_id=chunk-1163ea5523af0422]\nsource=pep-0008.rst\nsection=Descriptive: Naming Styles\ncontent:\nThere are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\n---\n\n[chunk_id=chunk-5bfd25af6ead49ee]\nsource=pep-0008.rst\nsection=Function and Variable Names\ncontent:\nFunction names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility.\n\n---\n\n[chunk_id=chunk-9d0176b9a3f9f83d]\nsource=pep-0008.rst\nsection=Designing for Inheritance\ncontent:\nclass API, and which are truly only to be\nused by your base class.\n\nWith this in mind, here are the Pythonic guidelines:\n\n- Public attributes should have no leading underscores.\n\n- If your public attribute name collides with a reserved keyword,\n  append a single trailing underscore to your attribute name.  This is\n  preferable to an abbreviation or corrupted spelling.  (However,\n  notwithstanding this rule, 'cls' is the preferred spelling for any\n  variable or argument which is known to be a class, especially the\n  first argument to a class method.)\n\nNote 1: See the argument name recommendation above for class methods.\n\n- For simple public data attributes, it is best to expose just the\n  attribute name, without complicated accessor/mutator methods.  Keep\n  in mind that Python provides an easy path to future enhancement,\n  should you find that a simple data attribute needs to grow\n  functional behavior.  In that case, use properties to hide\n  functional implementation behind simple data attribute access\n  syntax.\n\nNote 1: Try to keep the functional behavior side-effect free,\n  although side-effects such as caching are generally fine.\n\nGit diff with explicit new-line labels:\nFILE: app/routes/users.py\n+2: from app.repositories import user_repository\n+5: \n+6: \n+7: @bp.get(\"/users/<int:user_id>\")\n+8: def get_user(user_id):\n+9:     user = user_repository.find_by_id(user_id)\n+10:     return jsonify(user.to_dict())\n",
+  "raw_response": "{\n  \"summary\": \"The diff introduces a direct repository import and call in a route handler, violating the project's HTTP layer boundary rule, and fails to handle the case where the repository returns None, which would cause an AttributeError.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/routes/users.py\",\n      \"line_start\": 2,\n      \"line_end\": 2,\n      \"category\": \"architecture\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Route module imports repository directly, violating the HTTP layer boundary rule that route modules must not import or call repositories directly.\",\n      \"suggestion\": \"Remove the direct import of user_repository and instead call an application service that encapsulates the repository access.\",\n      \"explanation\": \"The project design explicitly states: 'Route modules must not import or call repositories directly.' The import on line 2 and the call on line 9 violate this rule, coupling HTTP handling with data access.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"HTTP layer boundary\",\n          \"chunk_id\": \"chunk-dab91a531d33218b\",\n          \"quote\": \"Route modules must not import or call repositories directly.\"\n        }\n      ]\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/routes/users.py\",\n      \"line_start\": 9,\n      \"line_end\": 10,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Repository lookup result is not checked for None before accessing .to_dict(), which will raise AttributeError if user is not found.\",\n      \"suggestion\": \"Check if user is None and return a 404 response in that case, as per project guidelines.\",\n      \"explanation\": \"The project design states: 'Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.' The code on lines 9-10 does not handle None, leading to a crash.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"Missing entity handling\",\n          \"chunk_id\": \"chunk-4bcafd0218fe342d\",\n          \"quote\": \"Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.\"\n        }\n      ]\n    }\n  ]\n}",
+  "raw_attempts": [
+    "{\n  \"summary\": \"The diff introduces a direct repository import and call in a route handler, violating the project's HTTP layer boundary rule, and fails to handle the case where the repository returns None, which would cause an AttributeError.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/routes/users.py\",\n      \"line_start\": 2,\n      \"line_end\": 2,\n      \"category\": \"architecture\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Route module imports repository directly, violating the HTTP layer boundary rule that route modules must not import or call repositories directly.\",\n      \"suggestion\": \"Remove the direct import of user_repository and instead call an application service that encapsulates the repository access.\",\n      \"explanation\": \"The project design explicitly states: 'Route modules must not import or call repositories directly.' The import on line 2 and the call on line 9 violate this rule, coupling HTTP handling with data access.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"HTTP layer boundary\",\n          \"chunk_id\": \"chunk-dab91a531d33218b\",\n          \"quote\": \"Route modules must not import or call repositories directly.\"\n        }\n      ]\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/routes/users.py\",\n      \"line_start\": 9,\n      \"line_end\": 10,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Repository lookup result is not checked for None before accessing .to_dict(), which will raise AttributeError if user is not found.\",\n      \"suggestion\": \"Check if user is None and return a 404 response in that case, as per project guidelines.\",\n      \"explanation\": \"The project design states: 'Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.' The code on lines 9-10 does not handle None, leading to a crash.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"Missing entity handling\",\n          \"chunk_id\": \"chunk-4bcafd0218fe342d\",\n          \"quote\": \"Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.\"\n        }\n      ]\n    }\n  ]\n}",
+    "{\n  \"summary\": \"The diff introduces a direct repository import and call in a route handler, violating the project's HTTP layer boundary rule, and fails to handle the case where the repository returns None, which would cause an AttributeError.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/routes/users.py\",\n      \"line_start\": 2,\n      \"line_end\": 2,\n      \"category\": \"architecture\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Route module imports repository directly, violating the HTTP layer boundary rule that route modules must not import or call repositories directly.\",\n      \"suggestion\": \"Remove the direct import of user_repository and instead call an application service that encapsulates the repository access.\",\n      \"explanation\": \"The project design explicitly states: 'Route modules must not import or call repositories directly.' The import on line 2 and the call on line 9 violate this rule, coupling HTTP handling with data access.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"HTTP layer boundary\",\n          \"chunk_id\": \"chunk-dab91a531d33218b\",\n          \"quote\": \"Route modules must not import or call repositories directly.\"\n        }\n      ]\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/routes/users.py\",\n      \"line_start\": 9,\n      \"line_end\": 10,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 1.0,\n      \"problem\": \"Repository lookup result is not checked for None before accessing .to_dict(), which will raise AttributeError if user is not found.\",\n      \"suggestion\": \"Check if user is None and return a 404 response in that case, as per project guidelines.\",\n      \"explanation\": \"The project design states: 'Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.' The code on lines 9-10 does not handle None, leading to a crash.\",\n      \"citations\": [\n        {\n          \"source\": \"project-design.md\",\n          \"section\": \"Missing entity handling\",\n          \"chunk_id\": \"chunk-4bcafd0218fe342d\",\n          \"quote\": \"Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.\"\n        }\n      ]\n    }\n  ]\n}"
+  ],
+  "review": {
+    "summary": "The diff introduces a direct repository import and call in a route handler, violating the project's HTTP layer boundary rule, and fails to handle the case where the repository returns None, which would cause an AttributeError.",
+    "issues": [
+      {
+        "issue_id": "ISSUE-001",
+        "file": "app/routes/users.py",
+        "line_start": 2,
+        "line_end": 2,
+        "category": "architecture",
+        "severity": "high",
+        "confidence": 1.0,
+        "problem": "Route module imports repository directly, violating the HTTP layer boundary rule that route modules must not import or call repositories directly.",
+        "suggestion": "Remove the direct import of user_repository and instead call an application service that encapsulates the repository access.",
+        "explanation": "The project design explicitly states: 'Route modules must not import or call repositories directly.' The import on line 2 and the call on line 9 violate this rule, coupling HTTP handling with data access.",
+        "citations": [
+          {
+            "source": "project-design.md",
+            "section": "HTTP layer boundary",
+            "chunk_id": "chunk-dab91a531d33218b",
+            "quote": "Route modules must not import or call repositories directly."
+          }
+        ]
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "file": "app/routes/users.py",
+        "line_start": 9,
+        "line_end": 10,
+        "category": "reliability",
+        "severity": "high",
+        "confidence": 1.0,
+        "problem": "Repository lookup result is not checked for None before accessing .to_dict(), which will raise AttributeError if user is not found.",
+        "suggestion": "Check if user is None and return a 404 response in that case, as per project guidelines.",
+        "explanation": "The project design states: 'Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response.' The code on lines 9-10 does not handle None, leading to a crash.",
+        "citations": [
+          {
+            "source": "project-design.md",
+            "section": "Missing entity handling",
+            "chunk_id": "chunk-4bcafd0218fe342d",
+            "quote": "Repository lookups may return None when an entity does not exist. A caller must handle that result explicitly before accessing entity attributes. HTTP-facing code should convert the missing-entity result to the service's documented 404 response."
+          }
+        ]
+      }
+    ]
+  },
+  "retrieved_chunks": [
+    {
+      "chunk_id": "chunk-dab91a531d33218b",
+      "source": "project-design.md",
+      "section": "HTTP layer boundary",
+      "text": "Route handlers may parse HTTP input, invoke one application service, and format the HTTP\nresponse. Route modules must not import or call repositories directly. Database access is\nowned by the repository layer and business decisions are owned by the service layer.",
+      "distance": 0.6344578862190247
+    },
+    {
+      "chunk_id": "chunk-4bcafd0218fe342d",
+      "source": "project-design.md",
+      "section": "Missing entity handling",
+      "text": "Repository lookups may return `None` when an entity does not exist. A caller must handle\nthat result explicitly before accessing entity attributes. HTTP-facing code should convert\nthe missing-entity result to the service's documented 404 response.",
+      "distance": 0.8575128316879272
+    },
+    {
+      "chunk_id": "chunk-1163ea5523af0422",
+      "source": "pep-0008.rst",
+      "section": "Descriptive: Naming Styles",
+      "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)",
+      "distance": 0.8653513193130493
+    },
+    {
+      "chunk_id": "chunk-5bfd25af6ead49ee",
+      "source": "pep-0008.rst",
+      "section": "Function and Variable Names",
+      "text": "Function names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility.",
+      "distance": 0.8668648600578308
+    },
+    {
+      "chunk_id": "chunk-9d0176b9a3f9f83d",
+      "source": "pep-0008.rst",
+      "section": "Designing for Inheritance",
+      "text": "class API, and which are truly only to be\nused by your base class.\n\nWith this in mind, here are the Pythonic guidelines:\n\n- Public attributes should have no leading underscores.\n\n- If your public attribute name collides with a reserved keyword,\n  append a single trailing underscore to your attribute name.  This is\n  preferable to an abbreviation or corrupted spelling.  (However,\n  notwithstanding this rule, 'cls' is the preferred spelling for any\n  variable or argument which is known to be a class, especially the\n  first argument to a class method.)\n\nNote 1: See the argument name recommendation above for class methods.\n\n- For simple public data attributes, it is best to expose just the\n  attribute name, without complicated accessor/mutator methods.  Keep\n  in mind that Python provides an easy path to future enhancement,\n  should you find that a simple data attribute needs to grow\n  functional behavior.  In that case, use properties to hide\n  functional implementation behind simple data attribute access\n  syntax.\n\nNote 1: Try to keep the functional behavior side-effect free,\n  although side-effects such as caching are generally fine.",
+      "distance": 0.9259285926818848
+    }
+  ],
+  "citation_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "chunk_id": "chunk-dab91a531d33218b",
+      "valid": true,
+      "reason": "source, section, chunk_id, and quote match"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "chunk_id": "chunk-4bcafd0218fe342d",
+      "valid": true,
+      "reason": "source, section, chunk_id, and quote match"
+    }
+  ],
+  "location_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    }
+  ],
+  "quality_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+diff --git a/app/importer.py b/app/importer.py
+new file mode 100644
+index 0000000..6bb421b
+--- /dev/null
++++ b/app/importer.py
+@@ -0,0 +1,2 @@
++def loadUserData(recordIds):
++    return [load_record(item) for item in recordIds]

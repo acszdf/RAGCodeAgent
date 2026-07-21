@@ -1,0 +1,6 @@
+faiss-cpu==1.14.3
+numpy==2.5.1
+openai==2.45.0
+pydantic==2.13.4
+python-dotenv==1.2.2
+pytest==9.1.1

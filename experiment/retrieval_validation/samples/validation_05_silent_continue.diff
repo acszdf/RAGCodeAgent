@@ -1,0 +1,14 @@
+diff --git a/app/import_service.py b/app/import_service.py
+index 2c5f8ad..b8c91a4 100644
+--- a/app/import_service.py
++++ b/app/import_service.py
+@@ -12,1 +12,9 @@ def validate_row(row):
+     return bool(row.get("id"))
++
++
++def import_rows(rows):
++    for row in rows:
++        try:
++            parse_row(row)
++        except ValueError:
++            continue

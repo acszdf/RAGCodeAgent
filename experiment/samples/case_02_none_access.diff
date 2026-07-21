@@ -1,0 +1,11 @@
+diff --git a/app/profile_service.py b/app/profile_service.py
+index 6e7192a..1ea0bf9 100644
+--- a/app/profile_service.py
++++ b/app/profile_service.py
+@@ -7,1 +7,6 @@ def list_profiles():
+     return [serialize(user) for user in User.query.all()]
++
++
++def get_profile(user_id):
++    user = User.query.filter_by(id=user_id).first()
++    return {"id": user.id, "name": user.name}

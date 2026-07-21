@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "created_at": "2026-07-16",
+  "frozen_before_model_runs": true,
+  "annotation_policy": "Only defects introduced on added lines are annotated.",
+  "matching_policy": "One ground-truth issue represents one root cause; multiple manifestations do not receive additional recall credit.",
+  "severity_scale": {
+    "critical": "Immediate compromise or data loss.",
+    "high": "Likely serious runtime or security failure.",
+    "medium": "Conditional defect or important design violation.",
+    "low": "Style or maintainability problem with limited runtime impact."
+  },
+  "cases": [
+    {
+      "sample": "case_01_naming.diff",
+      "issues": [
+        {
+          "issue_key": "naming-convention",
+          "file": "app/pricing.py",
+          "line": 1,
+          "category": "style",
+          "severity": "low",
+          "description": "Function and local names use mixed/capitalized style instead of Python snake_case.",
+          "evidence_source": "pep-0008.rst",
+          "evidence_section": "Function and Variable Names"
+        }
+      ]
+    },
+    {
+      "sample": "case_02_none_access.diff",
+      "issues": [
+        {
+          "issue_key": "unchecked-none",
+          "file": "app/profile_service.py",
+          "line": 12,
+          "category": "reliability",
+          "severity": "high",
+          "description": "first() may return None, so attribute access can raise AttributeError.",
+          "evidence_source": "project-design.md",
+          "evidence_section": "Missing entity handling"
+        }
+      ]
+    },
+    {
+      "sample": "case_03_sql_injection.diff",
+      "issues": [
+        {
+          "issue_key": "sql-injection",
+          "file": "app/user_repository.py",
+          "line": 22,
+          "category": "security",
+          "severity": "critical",
+          "description": "User-controlled email is interpolated into an SQL statement.",
+          "evidence_source": "sql-injection-prevention.md",
+          "evidence_section": "Primary Defenses",
+          "evidence_sections": [
+            "Primary Defenses",
+            "Defense Option 1: Prepared Statements (with Parameterized Queries)",
+            "Safe Java Prepared Statement Example"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "case_04_layer_violation.diff",
+      "issues": [
+        {
+          "issue_key": "route-repository-coupling",
+          "file": "app/routes/users.py",
+          "line": 9,
+          "category": "architecture",
+          "severity": "medium",
+          "description": "The HTTP route calls a repository directly and bypasses the service layer.",
+          "evidence_source": "project-design.md",
+          "evidence_section": "HTTP layer boundary"
+        },
+        {
+          "issue_key": "unchecked-none",
+          "file": "app/routes/users.py",
+          "line": 10,
+          "category": "reliability",
+          "severity": "high",
+          "description": "The repository result is dereferenced without handling a missing user.",
+          "evidence_source": "project-design.md",
+          "evidence_section": "Missing entity handling"
+        }
+      ]
+    },
+    {
+      "sample": "case_05_swallowed_exception.diff",
+      "issues": [
+        {
+          "issue_key": "swallowed-exception",
+          "file": "app/notification_service.py",
+          "line": 17,
+          "category": "reliability",
+          "severity": "high",
+          "description": "A broad exception is silently swallowed and the function reports success.",
+          "evidence_source": "project-design.md",
+          "evidence_section": "Exception handling"
+        }
+      ]
+    }
+  ]
+}

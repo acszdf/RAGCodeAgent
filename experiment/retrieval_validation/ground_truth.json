@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "split": "retrieval-validation",
+  "annotation_policy": "Validation cases diagnose retrieval behavior and are excluded from main review metrics.",
+  "cases": [
+    {
+      "sample": "validation_01_identifier_style.diff",
+      "issues": [
+        {
+          "issue_key": "identifier-naming",
+          "evidence_source": "pep-0008.rst",
+          "evidence_sections": [
+            "Function and Variable Names",
+            "Method Names and Instance Variables",
+            "Descriptive: Naming Styles"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "validation_02_cursor_concat.diff",
+      "issues": [
+        {
+          "issue_key": "sql-injection",
+          "evidence_source": "sql-injection-prevention.md",
+          "evidence_sections": [
+            "Defense Option 1: Prepared Statements (with Parameterized Queries)",
+            "Primary Defenses",
+            "Safe Java Prepared Statement Example"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "validation_03_query_get.diff",
+      "issues": [
+        {
+          "issue_key": "unchecked-missing-entity",
+          "evidence_source": "project-design.md",
+          "evidence_sections": ["Missing entity handling"]
+        }
+      ]
+    },
+    {
+      "sample": "validation_04_route_store.diff",
+      "issues": [
+        {
+          "issue_key": "route-data-layer-coupling",
+          "evidence_source": "project-design.md",
+          "evidence_sections": ["HTTP layer boundary"]
+        }
+      ]
+    },
+    {
+      "sample": "validation_05_silent_continue.diff",
+      "issues": [
+        {
+          "issue_key": "silently-discarded-error",
+          "evidence_source": "project-design.md",
+          "evidence_sections": ["Exception handling"]
+        }
+      ]
+    }
+  ]
+}

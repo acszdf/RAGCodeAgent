@@ -1,0 +1,316 @@
+{
+  "top_k": 5,
+  "expected_evidence_count": 6,
+  "matched_evidence_count": 6,
+  "evidence_recall_at_k": 1.0,
+  "cases": [
+    {
+      "sample": "case_01_naming.diff",
+      "query": "Python function variable parameter naming style lowercase underscore",
+      "expected_evidence": [
+        {
+          "issue_key": "naming-convention",
+          "source": "pep-0008.rst",
+          "acceptable_sections": [
+            "Function and Variable Names"
+          ],
+          "matched_sections": [
+            "Function and Variable Names"
+          ],
+          "hit": true
+        }
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "chunk-1163ea5523af0422",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.865351,
+          "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "chunk-5bfd25af6ead49ee",
+          "source": "pep-0008.rst",
+          "section": "Function and Variable Names",
+          "distance": 0.866865,
+          "text": "Function names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "chunk-f74ec20fe4ef3a22",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.897665,
+          "text": "ase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\nThere's also the style of using a short unique prefix to group related\nnames together.  This is not used much in Python, but it is mentioned\nfor completeness.  For example, the ``os.stat()`` function returns a\ntuple whose items traditionally have names like ``st_mode``,\n``st_size``, ``st_mtime`` and so on.  (This is done to emphasize the\ncorrespondence with the fields of the POSIX system call struct, which\nhelps programmers familiar with that.)\n\nThe X11 library uses a leading X for all its public functions.  In\nPython, this style is generally deemed unnecessary because attribute\nand method names are prefixed with an object, and function names are\nprefixed with a module name.\n\nIn addition, the following special forms using leading or trailing\nunderscores are recognized (these can generally be combined with any\ncase convention):\n\n- ``_single_leading_underscore``: weak \"internal use\" indicator.\n  E.g. ``from M import *`` does not import objects whose names start\n  with an underscore."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "chunk-13100d2a4dfdddc8",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.911129,
+          "text": "eak \"internal use\" indicator.\n  E.g. ``from M import *`` does not import objects whose names start\n  with an underscore.\n\n- ``single_trailing_underscore_``: used by convention to avoid\n  conflicts with Python keyword, e.g. :\n\n.. code-block::\n     :class: good\n\ntkinter.Toplevel(master, class_='ClassName')\n\n- ``__double_leading_underscore``: when naming a class attribute,\n  invokes name mangling (inside class FooBar, ``__boo`` becomes\n  ``_FooBar__boo``; see below).\n\n- ``__double_leading_and_trailing_underscore__``: \"magic\" objects or\n  attributes that live in user-controlled namespaces.\n  E.g. ``__init__``, ``__import__`` or ``__file__``.  Never invent\n  such names; only use them as documented."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "chunk-6ce93cdba7353480",
+          "source": "pep-0008.rst",
+          "section": "Method Names and Instance Variables",
+          "distance": 0.914393,
+          "text": "Use the function naming rules: lowercase with words separated by\nunderscores as necessary to improve readability.\n\nUse one leading underscore only for non-public methods and instance\nvariables.\n\nTo avoid name clashes with subclasses, use two leading underscores to\ninvoke Python's name mangling rules.\n\nPython mangles these names with the class name: if class Foo has an\nattribute named ``__a``, it cannot be accessed by ``Foo.__a``.  (An\ninsistent user could still gain access by calling ``Foo._Foo__a``.)\nGenerally, double leading underscores should be used only to avoid\nname conflicts with attributes in classes designed to be subclassed.\n\nNote: there is some controversy about the use of __names (see below)."
+        }
+      ]
+    },
+    {
+      "sample": "case_02_none_access.diff",
+      "query": "Python function variable parameter naming style lowercase underscore\n\n--- query ---\n\ndatabase lookup missing result None check before attribute access",
+      "expected_evidence": [
+        {
+          "issue_key": "unchecked-none",
+          "source": "project-design.md",
+          "acceptable_sections": [
+            "Missing entity handling"
+          ],
+          "matched_sections": [
+            "Missing entity handling"
+          ],
+          "hit": true
+        }
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "chunk-4bcafd0218fe342d",
+          "source": "project-design.md",
+          "section": "Missing entity handling",
+          "distance": 0.857513,
+          "text": "Repository lookups may return `None` when an entity does not exist. A caller must handle\nthat result explicitly before accessing entity attributes. HTTP-facing code should convert\nthe missing-entity result to the service's documented 404 response."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "chunk-1163ea5523af0422",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.865351,
+          "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "chunk-5bfd25af6ead49ee",
+          "source": "pep-0008.rst",
+          "section": "Function and Variable Names",
+          "distance": 0.866865,
+          "text": "Function names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "chunk-9d0176b9a3f9f83d",
+          "source": "pep-0008.rst",
+          "section": "Designing for Inheritance",
+          "distance": 0.925929,
+          "text": "class API, and which are truly only to be\nused by your base class.\n\nWith this in mind, here are the Pythonic guidelines:\n\n- Public attributes should have no leading underscores.\n\n- If your public attribute name collides with a reserved keyword,\n  append a single trailing underscore to your attribute name.  This is\n  preferable to an abbreviation or corrupted spelling.  (However,\n  notwithstanding this rule, 'cls' is the preferred spelling for any\n  variable or argument which is known to be a class, especially the\n  first argument to a class method.)\n\nNote 1: See the argument name recommendation above for class methods.\n\n- For simple public data attributes, it is best to expose just the\n  attribute name, without complicated accessor/mutator methods.  Keep\n  in mind that Python provides an easy path to future enhancement,\n  should you find that a simple data attribute needs to grow\n  functional behavior.  In that case, use properties to hide\n  functional implementation behind simple data attribute access\n  syntax.\n\nNote 1: Try to keep the functional behavior side-effect free,\n  although side-effects such as caching are generally fine."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "chunk-f74ec20fe4ef3a22",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.897665,
+          "text": "ase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\nThere's also the style of using a short unique prefix to group related\nnames together.  This is not used much in Python, but it is mentioned\nfor completeness.  For example, the ``os.stat()`` function returns a\ntuple whose items traditionally have names like ``st_mode``,\n``st_size``, ``st_mtime`` and so on.  (This is done to emphasize the\ncorrespondence with the fields of the POSIX system call struct, which\nhelps programmers familiar with that.)\n\nThe X11 library uses a leading X for all its public functions.  In\nPython, this style is generally deemed unnecessary because attribute\nand method names are prefixed with an object, and function names are\nprefixed with a module name.\n\nIn addition, the following special forms using leading or trailing\nunderscores are recognized (these can generally be combined with any\ncase convention):\n\n- ``_single_leading_underscore``: weak \"internal use\" indicator.\n  E.g. ``from M import *`` does not import objects whose names start\n  with an underscore."
+        }
+      ]
+    },
+    {
+      "sample": "case_03_sql_injection.diff",
+      "query": "Python function variable parameter naming style lowercase underscore\n\n--- query ---\n\nSQL injection prevention untrusted input parameterized query prepared statement\n\n--- query ---\n\ndatabase lookup missing result None check before attribute access\n\n--- query ---\n\nweb route architecture service repository layer dependency boundary",
+      "expected_evidence": [
+        {
+          "issue_key": "sql-injection",
+          "source": "sql-injection-prevention.md",
+          "acceptable_sections": [
+            "Primary Defenses",
+            "Defense Option 1: Prepared Statements (with Parameterized Queries)",
+            "Safe Java Prepared Statement Example"
+          ],
+          "matched_sections": [
+            "Safe Java Prepared Statement Example"
+          ],
+          "hit": true
+        }
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "chunk-dab91a531d33218b",
+          "source": "project-design.md",
+          "section": "HTTP layer boundary",
+          "distance": 0.634458,
+          "text": "Route handlers may parse HTTP input, invoke one application service, and format the HTTP\nresponse. Route modules must not import or call repositories directly. Database access is\nowned by the repository layer and business decisions are owned by the service layer."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "chunk-9a5de37c6eff6a74",
+          "source": "sql-injection-prevention.md",
+          "section": "Safe Java Prepared Statement Example",
+          "distance": 0.738279,
+          "text": "In the safe Java example below, if an attacker were to enter the userID as `tom' or '1'='1`, the parameterized query would look for a username that literally matches the entire string `tom' or '1'='1`. Thus, the database would be protected against injections of malicious SQL code.\n\nThe following code example uses a `PreparedStatement`, Java's implementation of a parameterized query, to execute the same database query.\n\n```java\n// This should REALLY be validated too\nString custname = request.getParameter(\"customerName\");\n// Perform input validation to detect attacks\nString query = \"SELECT account_balance FROM user_data WHERE user_name = ? \";\nPreparedStatement pstmt = connection.prepareStatement( query );\npstmt.setString( 1, custname);"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "chunk-4bcafd0218fe342d",
+          "source": "project-design.md",
+          "section": "Missing entity handling",
+          "distance": 0.857513,
+          "text": "Repository lookups may return `None` when an entity does not exist. A caller must handle\nthat result explicitly before accessing entity attributes. HTTP-facing code should convert\nthe missing-entity result to the service's documented 404 response."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "chunk-1163ea5523af0422",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.865351,
+          "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "chunk-6418810111d8813c",
+          "source": "sql-injection-prevention.md",
+          "section": "Related Articles",
+          "distance": 0.840224,
+          "text": "://owasp.org/www-community/attacks/Blind_SQL_Injection) Vulnerabilities\n\n**How to Avoid SQL Injection Vulnerabilities**:\n\n- [OWASP Developers Guide](https://github.com/OWASP/DevGuide) article on how to avoid SQL injection vulnerabilities\n- OWASP Cheat Sheet that provides [numerous language specific examples of parameterized queries using both Prepared Statements and Stored Procedures](Query_Parameterization_Cheat_Sheet.md)\n- [The Bobby Tables site (inspired by the XKCD webcomic) has numerous examples in different languages of parameterized Prepared Statements and Stored Procedures](http://bobby-tables.com/)\n\n**How to Review Code for SQL Injection Vulnerabilities**:\n\n- [OWASP Code Review Guide](https://wiki.owasp.org/index.php/Category:OWASP_Code_Review_Project) article on how to [Review Code for SQL Injection](https://wiki.owasp.org/index.php/Reviewing_Code_for_SQL_Injection) Vulnerabilities\n\n**How to Test for SQL Injection Vulnerabilities**:"
+        }
+      ]
+    },
+    {
+      "sample": "case_04_layer_violation.diff",
+      "query": "Python function variable parameter naming style lowercase underscore\n\n--- query ---\n\ndatabase lookup missing result None check before attribute access\n\n--- query ---\n\nweb route architecture service repository layer dependency boundary",
+      "expected_evidence": [
+        {
+          "issue_key": "route-repository-coupling",
+          "source": "project-design.md",
+          "acceptable_sections": [
+            "HTTP layer boundary"
+          ],
+          "matched_sections": [
+            "HTTP layer boundary"
+          ],
+          "hit": true
+        },
+        {
+          "issue_key": "unchecked-none",
+          "source": "project-design.md",
+          "acceptable_sections": [
+            "Missing entity handling"
+          ],
+          "matched_sections": [
+            "Missing entity handling"
+          ],
+          "hit": true
+        }
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "chunk-dab91a531d33218b",
+          "source": "project-design.md",
+          "section": "HTTP layer boundary",
+          "distance": 0.634458,
+          "text": "Route handlers may parse HTTP input, invoke one application service, and format the HTTP\nresponse. Route modules must not import or call repositories directly. Database access is\nowned by the repository layer and business decisions are owned by the service layer."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "chunk-4bcafd0218fe342d",
+          "source": "project-design.md",
+          "section": "Missing entity handling",
+          "distance": 0.857513,
+          "text": "Repository lookups may return `None` when an entity does not exist. A caller must handle\nthat result explicitly before accessing entity attributes. HTTP-facing code should convert\nthe missing-entity result to the service's documented 404 response."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "chunk-1163ea5523af0422",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.865351,
+          "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "chunk-5bfd25af6ead49ee",
+          "source": "pep-0008.rst",
+          "section": "Function and Variable Names",
+          "distance": 0.866865,
+          "text": "Function names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "chunk-9d0176b9a3f9f83d",
+          "source": "pep-0008.rst",
+          "section": "Designing for Inheritance",
+          "distance": 0.925929,
+          "text": "class API, and which are truly only to be\nused by your base class.\n\nWith this in mind, here are the Pythonic guidelines:\n\n- Public attributes should have no leading underscores.\n\n- If your public attribute name collides with a reserved keyword,\n  append a single trailing underscore to your attribute name.  This is\n  preferable to an abbreviation or corrupted spelling.  (However,\n  notwithstanding this rule, 'cls' is the preferred spelling for any\n  variable or argument which is known to be a class, especially the\n  first argument to a class method.)\n\nNote 1: See the argument name recommendation above for class methods.\n\n- For simple public data attributes, it is best to expose just the\n  attribute name, without complicated accessor/mutator methods.  Keep\n  in mind that Python provides an easy path to future enhancement,\n  should you find that a simple data attribute needs to grow\n  functional behavior.  In that case, use properties to hide\n  functional implementation behind simple data attribute access\n  syntax.\n\nNote 1: Try to keep the functional behavior side-effect free,\n  although side-effects such as caching are generally fine."
+        }
+      ]
+    },
+    {
+      "sample": "case_05_swallowed_exception.diff",
+      "query": "Python function variable parameter naming style lowercase underscore\n\n--- query ---\n\nerror failure logging observability swallowed exceptions status",
+      "expected_evidence": [
+        {
+          "issue_key": "swallowed-exception",
+          "source": "project-design.md",
+          "acceptable_sections": [
+            "Exception handling"
+          ],
+          "matched_sections": [
+            "Exception handling"
+          ],
+          "hit": true
+        }
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "chunk-1163ea5523af0422",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.865351,
+          "text": "There are a lot of different naming styles.  It helps to be able to\nrecognize what naming style is being used, independently from what\nthey are used for.\n\nThe following naming styles are commonly distinguished:\n\n- ``b`` (single lowercase letter)\n- ``B`` (single uppercase letter)\n- ``lowercase``\n- ``lower_case_with_underscores``\n- ``UPPERCASE``\n- ``UPPER_CASE_WITH_UNDERSCORES``\n- ``CapitalizedWords`` (or CapWords, or CamelCase -- so named because\n  of the bumpy look of its letters [4]_).  This is also sometimes known\n  as StudlyCaps.\n\nNote: When using acronyms in CapWords, capitalize all the\n  letters of the acronym.  Thus HTTPServerError is better than\n  HttpServerError.\n- ``mixedCase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "chunk-e93e106b2c78c45a",
+          "source": "project-design.md",
+          "section": "Exception handling",
+          "distance": 0.878663,
+          "text": "Exceptions must not be silently discarded. A broad exception handler must either log the\nfailure with operation context and preserve the traceback, translate it to a documented\ndomain error, or re-raise it. An empty handler or an `except` block containing only `pass`\nis prohibited."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "chunk-5bfd25af6ead49ee",
+          "source": "pep-0008.rst",
+          "section": "Function and Variable Names",
+          "distance": 0.866865,
+          "text": "Function names should be lowercase, with words separated by\nunderscores as necessary to improve readability.\n\nVariable names follow the same convention as function names.\n\nmixedCase is allowed only in contexts where that's already the\nprevailing style (e.g. threading.py), to retain backwards\ncompatibility."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "chunk-c73cde5fc3773253",
+          "source": "pep-0008.rst",
+          "section": "Exception Names",
+          "distance": 0.89588,
+          "text": "Because exceptions should be classes, the class naming convention\napplies here.  However, you should use the suffix \"Error\" on your\nexception names (if the exception actually is an error)."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "chunk-f74ec20fe4ef3a22",
+          "source": "pep-0008.rst",
+          "section": "Descriptive: Naming Styles",
+          "distance": 0.897665,
+          "text": "ase`` (differs from CapitalizedWords by initial lowercase\n  character!)\n- ``Capitalized_Words_With_Underscores`` (ugly!)\n\nThere's also the style of using a short unique prefix to group related\nnames together.  This is not used much in Python, but it is mentioned\nfor completeness.  For example, the ``os.stat()`` function returns a\ntuple whose items traditionally have names like ``st_mode``,\n``st_size``, ``st_mtime`` and so on.  (This is done to emphasize the\ncorrespondence with the fields of the POSIX system call struct, which\nhelps programmers familiar with that.)\n\nThe X11 library uses a leading X for all its public functions.  In\nPython, this style is generally deemed unnecessary because attribute\nand method names are prefixed with an object, and function names are\nprefixed with a module name.\n\nIn addition, the following special forms using leading or trailing\nunderscores are recognized (these can generally be combined with any\ncase convention):\n\n- ``_single_leading_underscore``: weak \"internal use\" indicator.\n  E.g. ``from M import *`` does not import objects whose names start\n  with an underscore."
+        }
+      ]
+    }
+  ]
+}

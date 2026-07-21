@@ -1,0 +1,11 @@
+diff --git a/app/order_service.py b/app/order_service.py
+index fdd7c22..16d3293 100644
+--- a/app/order_service.py
++++ b/app/order_service.py
+@@ -10,1 +10,6 @@ def list_orders():
+     return Order.query.all()
++
++
++def order_total(order_id):
++    order = Order.query.get(order_id)
++    return order.total

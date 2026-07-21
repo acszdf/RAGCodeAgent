@@ -1,0 +1,72 @@
+{
+  "mode": "baseline",
+  "model": "deepseek-chat",
+  "prompt_version": "2026-07-21.1",
+  "created_at": "2026-07-20T17:15:27.959771+00:00",
+  "sample": "case_05_swallowed_exception.diff",
+  "sample_sha256": "bb8e222678e1c01cbdbbd93b537a022829a5e3970aa2a7ac0547629c3ebeae33",
+  "retrieval_query": null,
+  "prompt": "Review mode: baseline\n\nRules:\n1. Review only added lines shown with a '+' marker.\n2. Use the FILE path and numeric new-line labels exactly as supplied.\n3. Report one root cause per issue. Do not duplicate findings.\n4. Severity meanings: critical = immediate compromise/data loss; high = likely serious runtime\n   or security failure; medium = conditional defect or important design violation; low = style\n   or maintainability problem with limited runtime impact.\n5. Confidence below 0.70 should normally be omitted.\n6. Set citations to an empty array for every issue. Do not claim that a named standard or project rule requires something because no knowledge documents are supplied.\n7. issue_id values must be sequential: ISSUE-001, ISSUE-002, ...\n8. If no defensible issues exist, return an empty issues array.\n\nRequired JSON schema:\n{\n  \"$defs\": {\n    \"Citation\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"source\": {\n          \"description\": \"Knowledge document path shown in context\",\n          \"title\": \"Source\",\n          \"type\": \"string\"\n        },\n        \"section\": {\n          \"description\": \"Section heading shown in context\",\n          \"title\": \"Section\",\n          \"type\": \"string\"\n        },\n        \"chunk_id\": {\n          \"description\": \"Exact chunk identifier shown in context\",\n          \"title\": \"Chunk Id\",\n          \"type\": \"string\"\n        },\n        \"quote\": {\n          \"description\": \"Short verbatim quote copied from the retrieved chunk\",\n          \"maxLength\": 400,\n          \"minLength\": 1,\n          \"title\": \"Quote\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"source\",\n        \"section\",\n        \"chunk_id\",\n        \"quote\"\n      ],\n      \"title\": \"Citation\",\n      \"type\": \"object\"\n    },\n    \"ReviewIssue\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"issue_id\": {\n          \"pattern\": \"^ISSUE-\\\\d{3}$\",\n          \"title\": \"Issue Id\",\n          \"type\": \"string\"\n        },\n        \"file\": {\n          \"title\": \"File\",\n          \"type\": \"string\"\n        },\n        \"line_start\": {\n          \"minimum\": 1,\n          \"title\": \"Line Start\",\n          \"type\": \"integer\"\n        },\n        \"line_end\": {\n          \"minimum\": 1,\n          \"title\": \"Line End\",\n          \"type\": \"integer\"\n        },\n        \"category\": {\n          \"enum\": [\n            \"correctness\",\n            \"security\",\n            \"reliability\",\n            \"maintainability\",\n            \"style\",\n            \"architecture\",\n            \"performance\",\n            \"testing\"\n          ],\n          \"title\": \"Category\",\n          \"type\": \"string\"\n        },\n        \"severity\": {\n          \"$ref\": \"#/$defs/Severity\"\n        },\n        \"confidence\": {\n          \"maximum\": 1,\n          \"minimum\": 0,\n          \"title\": \"Confidence\",\n          \"type\": \"number\"\n        },\n        \"problem\": {\n          \"minLength\": 1,\n          \"title\": \"Problem\",\n          \"type\": \"string\"\n        },\n        \"suggestion\": {\n          \"minLength\": 1,\n          \"title\": \"Suggestion\",\n          \"type\": \"string\"\n        },\n        \"explanation\": {\n          \"minLength\": 1,\n          \"title\": \"Explanation\",\n          \"type\": \"string\"\n        },\n        \"citations\": {\n          \"items\": {\n            \"$ref\": \"#/$defs/Citation\"\n          },\n          \"title\": \"Citations\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\": [\n        \"issue_id\",\n        \"file\",\n        \"line_start\",\n        \"line_end\",\n        \"category\",\n        \"severity\",\n        \"confidence\",\n        \"problem\",\n        \"suggestion\",\n        \"explanation\"\n      ],\n      \"title\": \"ReviewIssue\",\n      \"type\": \"object\"\n    },\n    \"Severity\": {\n      \"enum\": [\n        \"critical\",\n        \"high\",\n        \"medium\",\n        \"low\"\n      ],\n      \"title\": \"Severity\",\n      \"type\": \"string\"\n    }\n  },\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"summary\": {\n      \"title\": \"Summary\",\n      \"type\": \"string\"\n    },\n    \"issues\": {\n      \"items\": {\n        \"$ref\": \"#/$defs/ReviewIssue\"\n      },\n      \"title\": \"Issues\",\n      \"type\": \"array\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"issues\"\n  ],\n  \"title\": \"ReviewPayload\",\n  \"type\": \"object\"\n}\n\nExternal knowledge:\nNo external knowledge is available in baseline mode.\n\nGit diff with explicit new-line labels:\nFILE: app/notification_service.py\n+11: \n+12: \n+13: def notify_user(user, message):\n+14:     try:\n+15:         mailer.send(user.email, message)\n+16:     except Exception:\n+17:         pass\n+18:     return {\"delivered\": True}\n",
+  "raw_response": "{\n  \"summary\": \"The diff introduces a single function with a silent exception catch and a hardcoded success return, which can mask delivery failures and mislead callers.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 16,\n      \"line_end\": 17,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"A bare except Exception clause silently swallows all exceptions from mailer.send, making delivery failures invisible to the caller.\",\n      \"suggestion\": \"Remove the try-except or at minimum log the exception. If failures must be tolerated, return a status indicating failure instead of always returning delivered=True.\",\n      \"explanation\": \"The except block does nothing (pass), so any exception (e.g., network error, invalid email) is discarded. The function then unconditionally returns {\\\"delivered\\\": True}, which is misleading. This can cause undetected notification loss.\",\n      \"citations\": []\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 18,\n      \"line_end\": 18,\n      \"category\": \"correctness\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"The function always returns {\\\"delivered\\\": True} even when mailer.send raises an exception, which is factually incorrect.\",\n      \"suggestion\": \"Return a status that reflects the actual outcome, e.g., {\\\"delivered\\\": False} on failure, or propagate the exception to the caller.\",\n      \"explanation\": \"The return statement is outside the try block and executes unconditionally. Combined with the silent except, the caller cannot distinguish successful delivery from failure.\",\n      \"citations\": []\n    }\n  ]\n}",
+  "raw_attempts": [
+    "{\n  \"summary\": \"The diff introduces a single function with a silent exception catch and a hardcoded success return, which can mask delivery failures and mislead callers.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 16,\n      \"line_end\": 17,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"A bare except Exception clause silently swallows all exceptions from mailer.send, making delivery failures invisible to the caller.\",\n      \"suggestion\": \"Remove the try-except or at minimum log the exception. If failures must be tolerated, return a status indicating failure instead of always returning delivered=True.\",\n      \"explanation\": \"The except block does nothing (pass), so any exception (e.g., network error, invalid email) is discarded. The function then unconditionally returns {\\\"delivered\\\": True}, which is misleading. This can cause undetected notification loss.\",\n      \"citations\": []\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 18,\n      \"line_end\": 18,\n      \"category\": \"correctness\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"The function always returns {\\\"delivered\\\": True} even when mailer.send raises an exception, which is factually incorrect.\",\n      \"suggestion\": \"Return a status that reflects the actual outcome, e.g., {\\\"delivered\\\": False} on failure, or propagate the exception to the caller.\",\n      \"explanation\": \"The return statement is outside the try block and executes unconditionally. Combined with the silent except, the caller cannot distinguish successful delivery from failure.\",\n      \"citations\": []\n    }\n  ]\n}",
+    "{\n  \"summary\": \"The diff introduces a single function with a silent exception catch and a hardcoded success return, which can mask delivery failures and mislead callers.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 16,\n      \"line_end\": 17,\n      \"category\": \"reliability\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"A bare except Exception clause silently swallows all exceptions from mailer.send, making delivery failures invisible to the caller.\",\n      \"suggestion\": \"Remove the try-except or at minimum log the exception. If failures must be tolerated, return a status indicating failure instead of always returning delivered=True.\",\n      \"explanation\": \"The except block does nothing (pass), so any exception (e.g., network error, invalid email) is discarded. The function then unconditionally returns {\\\"delivered\\\": True}, which is misleading. This can cause undetected notification loss.\",\n      \"citations\": []\n    },\n    {\n      \"issue_id\": \"ISSUE-002\",\n      \"file\": \"app/notification_service.py\",\n      \"line_start\": 18,\n      \"line_end\": 18,\n      \"category\": \"correctness\",\n      \"severity\": \"high\",\n      \"confidence\": 0.95,\n      \"problem\": \"The function always returns {\\\"delivered\\\": True} even when mailer.send raises an exception, which is factually incorrect.\",\n      \"suggestion\": \"Return a status that reflects the actual outcome, e.g., {\\\"delivered\\\": False} on failure, or propagate the exception to the caller.\",\n      \"explanation\": \"The return statement is outside the try block and executes unconditionally. Combined with the silent except, the caller cannot distinguish successful delivery from failure.\",\n      \"citations\": []\n    }\n  ]\n}"
+  ],
+  "review": {
+    "summary": "The diff introduces a single function with a silent exception catch and a hardcoded success return, which can mask delivery failures and mislead callers.",
+    "issues": [
+      {
+        "issue_id": "ISSUE-001",
+        "file": "app/notification_service.py",
+        "line_start": 16,
+        "line_end": 17,
+        "category": "reliability",
+        "severity": "high",
+        "confidence": 0.95,
+        "problem": "A bare except Exception clause silently swallows all exceptions from mailer.send, making delivery failures invisible to the caller.",
+        "suggestion": "Remove the try-except or at minimum log the exception. If failures must be tolerated, return a status indicating failure instead of always returning delivered=True.",
+        "explanation": "The except block does nothing (pass), so any exception (e.g., network error, invalid email) is discarded. The function then unconditionally returns {\"delivered\": True}, which is misleading. This can cause undetected notification loss.",
+        "citations": []
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "file": "app/notification_service.py",
+        "line_start": 18,
+        "line_end": 18,
+        "category": "correctness",
+        "severity": "high",
+        "confidence": 0.95,
+        "problem": "The function always returns {\"delivered\": True} even when mailer.send raises an exception, which is factually incorrect.",
+        "suggestion": "Return a status that reflects the actual outcome, e.g., {\"delivered\": False} on failure, or propagate the exception to the caller.",
+        "explanation": "The return statement is outside the try block and executes unconditionally. Combined with the silent except, the caller cannot distinguish successful delivery from failure.",
+        "citations": []
+      }
+    ]
+  },
+  "retrieved_chunks": [],
+  "citation_checks": [],
+  "location_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    }
+  ],
+  "quality_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    }
+  ]
+}

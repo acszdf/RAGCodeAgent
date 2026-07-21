@@ -1,0 +1,49 @@
+{
+  "mode": "baseline",
+  "model": "deepseek-chat",
+  "prompt_version": "2026-07-21.1",
+  "created_at": "2026-07-20T17:15:00.360748+00:00",
+  "sample": "case_03_sql_injection.diff",
+  "sample_sha256": "d3b9871f4bb5493d243f8c7a26bae24ae433c1cc8c013091e4e67ca078eefb63",
+  "retrieval_query": null,
+  "prompt": "Review mode: baseline\n\nRules:\n1. Review only added lines shown with a '+' marker.\n2. Use the FILE path and numeric new-line labels exactly as supplied.\n3. Report one root cause per issue. Do not duplicate findings.\n4. Severity meanings: critical = immediate compromise/data loss; high = likely serious runtime\n   or security failure; medium = conditional defect or important design violation; low = style\n   or maintainability problem with limited runtime impact.\n5. Confidence below 0.70 should normally be omitted.\n6. Set citations to an empty array for every issue. Do not claim that a named standard or project rule requires something because no knowledge documents are supplied.\n7. issue_id values must be sequential: ISSUE-001, ISSUE-002, ...\n8. If no defensible issues exist, return an empty issues array.\n\nRequired JSON schema:\n{\n  \"$defs\": {\n    \"Citation\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"source\": {\n          \"description\": \"Knowledge document path shown in context\",\n          \"title\": \"Source\",\n          \"type\": \"string\"\n        },\n        \"section\": {\n          \"description\": \"Section heading shown in context\",\n          \"title\": \"Section\",\n          \"type\": \"string\"\n        },\n        \"chunk_id\": {\n          \"description\": \"Exact chunk identifier shown in context\",\n          \"title\": \"Chunk Id\",\n          \"type\": \"string\"\n        },\n        \"quote\": {\n          \"description\": \"Short verbatim quote copied from the retrieved chunk\",\n          \"maxLength\": 400,\n          \"minLength\": 1,\n          \"title\": \"Quote\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"source\",\n        \"section\",\n        \"chunk_id\",\n        \"quote\"\n      ],\n      \"title\": \"Citation\",\n      \"type\": \"object\"\n    },\n    \"ReviewIssue\": {\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"issue_id\": {\n          \"pattern\": \"^ISSUE-\\\\d{3}$\",\n          \"title\": \"Issue Id\",\n          \"type\": \"string\"\n        },\n        \"file\": {\n          \"title\": \"File\",\n          \"type\": \"string\"\n        },\n        \"line_start\": {\n          \"minimum\": 1,\n          \"title\": \"Line Start\",\n          \"type\": \"integer\"\n        },\n        \"line_end\": {\n          \"minimum\": 1,\n          \"title\": \"Line End\",\n          \"type\": \"integer\"\n        },\n        \"category\": {\n          \"enum\": [\n            \"correctness\",\n            \"security\",\n            \"reliability\",\n            \"maintainability\",\n            \"style\",\n            \"architecture\",\n            \"performance\",\n            \"testing\"\n          ],\n          \"title\": \"Category\",\n          \"type\": \"string\"\n        },\n        \"severity\": {\n          \"$ref\": \"#/$defs/Severity\"\n        },\n        \"confidence\": {\n          \"maximum\": 1,\n          \"minimum\": 0,\n          \"title\": \"Confidence\",\n          \"type\": \"number\"\n        },\n        \"problem\": {\n          \"minLength\": 1,\n          \"title\": \"Problem\",\n          \"type\": \"string\"\n        },\n        \"suggestion\": {\n          \"minLength\": 1,\n          \"title\": \"Suggestion\",\n          \"type\": \"string\"\n        },\n        \"explanation\": {\n          \"minLength\": 1,\n          \"title\": \"Explanation\",\n          \"type\": \"string\"\n        },\n        \"citations\": {\n          \"items\": {\n            \"$ref\": \"#/$defs/Citation\"\n          },\n          \"title\": \"Citations\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\": [\n        \"issue_id\",\n        \"file\",\n        \"line_start\",\n        \"line_end\",\n        \"category\",\n        \"severity\",\n        \"confidence\",\n        \"problem\",\n        \"suggestion\",\n        \"explanation\"\n      ],\n      \"title\": \"ReviewIssue\",\n      \"type\": \"object\"\n    },\n    \"Severity\": {\n      \"enum\": [\n        \"critical\",\n        \"high\",\n        \"medium\",\n        \"low\"\n      ],\n      \"title\": \"Severity\",\n      \"type\": \"string\"\n    }\n  },\n  \"additionalProperties\": false,\n  \"properties\": {\n    \"summary\": {\n      \"title\": \"Summary\",\n      \"type\": \"string\"\n    },\n    \"issues\": {\n      \"items\": {\n        \"$ref\": \"#/$defs/ReviewIssue\"\n      },\n      \"title\": \"Issues\",\n      \"type\": \"array\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"issues\"\n  ],\n  \"title\": \"ReviewPayload\",\n  \"type\": \"object\"\n}\n\nExternal knowledge:\nNo external knowledge is available in baseline mode.\n\nGit diff with explicit new-line labels:\nFILE: app/user_repository.py\n+19: \n+20: \n+21: def find_by_email(email):\n+22:     query = f\"SELECT id, email FROM users WHERE email = '{email}'\"\n+23:     return db.session.execute(query).fetchone()\n",
+  "raw_response": "{\n  \"summary\": \"The diff introduces a SQL injection vulnerability by directly interpolating user input into a SQL query string.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/user_repository.py\",\n      \"line_start\": 22,\n      \"line_end\": 22,\n      \"category\": \"security\",\n      \"severity\": \"critical\",\n      \"confidence\": 1.0,\n      \"problem\": \"SQL injection vulnerability: user-supplied email is directly concatenated into the SQL query without sanitization or parameterization.\",\n      \"suggestion\": \"Use parameterized queries (e.g., `db.session.execute(text(\\\"SELECT id, email FROM users WHERE email = :email\\\"), {\\\"email\\\": email})`) or an ORM method like `User.query.filter_by(email=email).first()`.\",\n      \"explanation\": \"An attacker can craft a malicious email value (e.g., `' OR 1=1 --`) to manipulate the query, potentially accessing or destroying data. This is a critical security flaw.\",\n      \"citations\": []\n    }\n  ]\n}",
+  "raw_attempts": [
+    "{\n  \"summary\": \"The diff introduces a SQL injection vulnerability by directly interpolating user input into a SQL query string.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/user_repository.py\",\n      \"line_start\": 22,\n      \"line_end\": 22,\n      \"category\": \"security\",\n      \"severity\": \"critical\",\n      \"confidence\": 1.0,\n      \"problem\": \"SQL injection vulnerability: user-supplied email is directly concatenated into the SQL query without sanitization or parameterization.\",\n      \"suggestion\": \"Use parameterized queries (e.g., `db.session.execute(text(\\\"SELECT id, email FROM users WHERE email = :email\\\"), {\\\"email\\\": email})`) or an ORM method like `User.query.filter_by(email=email).first()`.\",\n      \"explanation\": \"An attacker can craft a malicious email value (e.g., `' OR 1=1 --`) to manipulate the query, potentially accessing or destroying data. This is a critical security flaw.\",\n      \"citations\": []\n    }\n  ]\n}",
+    "{\n  \"summary\": \"The diff introduces a SQL injection vulnerability by directly interpolating user input into a SQL query string.\",\n  \"issues\": [\n    {\n      \"issue_id\": \"ISSUE-001\",\n      \"file\": \"app/user_repository.py\",\n      \"line_start\": 22,\n      \"line_end\": 22,\n      \"category\": \"security\",\n      \"severity\": \"critical\",\n      \"confidence\": 1.0,\n      \"problem\": \"SQL injection vulnerability: user-supplied email is directly concatenated into the SQL query without sanitization or parameterization.\",\n      \"suggestion\": \"Use parameterized queries (e.g., `db.session.execute(text(\\\"SELECT id, email FROM users WHERE email = :email\\\"), {\\\"email\\\": email})`) or an ORM method like `User.query.filter_by(email=email).first()`.\",\n      \"explanation\": \"An attacker can craft a malicious email value (e.g., `' OR 1=1 --`) to manipulate the query, potentially accessing or destroying data. This is a critical security flaw.\",\n      \"citations\": []\n    }\n  ]\n}"
+  ],
+  "review": {
+    "summary": "The diff introduces a SQL injection vulnerability by directly interpolating user input into a SQL query string.",
+    "issues": [
+      {
+        "issue_id": "ISSUE-001",
+        "file": "app/user_repository.py",
+        "line_start": 22,
+        "line_end": 22,
+        "category": "security",
+        "severity": "critical",
+        "confidence": 1.0,
+        "problem": "SQL injection vulnerability: user-supplied email is directly concatenated into the SQL query without sanitization or parameterization.",
+        "suggestion": "Use parameterized queries (e.g., `db.session.execute(text(\"SELECT id, email FROM users WHERE email = :email\"), {\"email\": email})`) or an ORM method like `User.query.filter_by(email=email).first()`.",
+        "explanation": "An attacker can craft a malicious email value (e.g., `' OR 1=1 --`) to manipulate the query, potentially accessing or destroying data. This is a critical security flaw.",
+        "citations": []
+      }
+    ]
+  },
+  "retrieved_chunks": [],
+  "citation_checks": [],
+  "location_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "file and line_start point to an added line"
+    }
+  ],
+  "quality_checks": [
+    {
+      "issue_id": "ISSUE-001",
+      "valid": true,
+      "reason": "passed deterministic semantic checks"
+    }
+  ]
+}

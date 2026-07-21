@@ -1,0 +1,12 @@
+diff --git a/app/routes/reports.py b/app/routes/reports.py
+index 3aa9813..7bf02d1 100644
+--- a/app/routes/reports.py
++++ b/app/routes/reports.py
+@@ -1,1 +1,7 @@
+ from flask import jsonify, request
++from app.data import report_store
++
++
++@bp.post("/reports")
++def create_report():
++    return jsonify(report_store.create(request.get_json()))
